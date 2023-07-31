@@ -1,8 +1,10 @@
 package com.example.parsingjsoninrv
 
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
@@ -11,6 +13,7 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.InputStream
@@ -45,6 +48,8 @@ class CardActivity : AppCompatActivity() {
     fun renderCard(pokemon: PokemonCard) {
         val mainScope = CoroutineScope(Dispatchers.Main)
         mainScope.launch{
+            val loader: RelativeLayout = findViewById(R.id.loadingPanel)
+            loader.visibility = View.GONE
             val name: TextView = findViewById(R.id.namePokemon)
             name.text = pokemon.name.replaceFirstChar(Char::titlecase)
             val img: ImageView = findViewById(R.id.frontImg)
@@ -59,6 +64,9 @@ class CardActivity : AppCompatActivity() {
                     .append(" ")
             }
             types.text = typeString.toString()
+            img.visibility = View.VISIBLE
+            name.visibility = View.VISIBLE
+            types.visibility = View.VISIBLE
         }
     }
 
@@ -71,7 +79,7 @@ private suspend fun httpGet(myURL: String?): String {
     val result = withContext(Dispatchers.IO) {
         val inputStream: InputStream
 
-        val url: URL = URL(myURL)
+        val url = URL(myURL)
 
         val conn: HttpsURLConnection = url.openConnection() as HttpsURLConnection
 
